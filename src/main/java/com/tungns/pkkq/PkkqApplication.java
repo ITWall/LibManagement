@@ -41,9 +41,18 @@ public class PkkqApplication {
           BorrowingInfo newBorrowingInfo = addBorrowingInfo();
           borrowingInfos.add(newBorrowingInfo);
           break;
+        case 4:
+          String memberName = inputMemberName();
+          List<BorrowingInfo> borrowingInfoSearched = searchBorrowingInfoByMemberName(memberName);
+          System.out.println(gson.toJson(borrowingInfoSearched));
+          break;
+        case 5:
+          int idBorrowingInfo = inputIdBorrowingInfo();
+          makePayment(idBorrowingInfo);
+          break;
       }
-    } while (4 != choice);
-    if (4 == choice) {
+    } while (6 != choice);
+    if (6 == choice) {
       scanner.close();
     }
   }
@@ -53,7 +62,9 @@ public class PkkqApplication {
     System.out.println("1. Add book");
     System.out.println("2. Add Member");
     System.out.println("3. Borrow Book");
-    System.out.println("4. Exit");
+    System.out.println("4. Search Borrowing Info");
+    System.out.println("5. Make payment");
+    System.out.println("6. Exit");
     System.out.print("Select your choice: ");
 
     int choice = scanner.nextInt();
@@ -141,9 +152,24 @@ public class PkkqApplication {
           }
         }
         info.setBooks(booksBorrowed);
+        info.setBorrowingDate(LocalDate.now());
+        System.out.print("Returning date expected: ");
+        String expectedReturningDateText = scanner.nextLine();
+        LocalDate expectedReturningDate = LocalDate.now();
+        try {
+          DateTimeFormatter f =
+              DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT);
+    
+          expectedReturningDate = LocalDate.parse(expectedReturningDateText, f);
+        } catch (Exception ex) {
+          System.out.print("error");
+          ex.printStackTrace();
+        }
+        info.setExpectedReturningDate(expectedReturningDate);
+        info.calculateTotalCost();
         System.out.println(gson.toJson(info));
         break;
-    }
+        }
 
     return info;
   }
@@ -239,5 +265,41 @@ public class PkkqApplication {
       }
     }
     return null;
+  }
+  
+  public static String inputMemberName(){
+    System.out.print("Member name: ");
+    String name = scanner.nextLine();
+    return name;
+  }
+  
+  public static List<BorrowingInfo> searchBorrowingInfoByMemberName(String memberName) {
+    List<BorrowingInfo> result = new ArrayList<>();
+    for (BorrowingInfo info: borrowingInfos) {
+      if (info.getMember().getName().equalsIgnoreCase(memberName)) {
+        result.add(info);
+      }
+    }
+    return result;
+  }
+  
+  public static int inputIdBorrowingInfo() {
+    System.out.print("Id Borrowing Info: ");
+    int id = scanner.nextInt();
+    scanner.nextLine();
+    return id;
+  }
+  
+  public static boolean makePayment(int idBorrowingInfo) {
+    for (BorrowingInfo info: borrowingInfos) {
+      if (info.getId() == idBorrowingInfo && !info.isPaid()) {
+        info.setPaid(true);
+        info.setRealReturningDate(LocalDate.of(2020, 12, 24));
+        info.calculateMoneyPaid();
+        System.out.println("Payment successfully");
+        return true;
+      }
+    }
+    return false;
   }
 }
