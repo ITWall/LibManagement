@@ -42,12 +42,12 @@ public class PkkqApplication {
           members.addAll(newMembers);
           break;
         case 3:
-          String bookName = input.inputBookName();
+          String bookName = input.inputStringWithLabel("Enter book name: ");
           List<Book> booksSearchResult = searching.searchBookByName(bookName, books);
           System.out.println(gson.toJson(booksSearchResult));
           break;
         case 4:
-          String memberName = input.inputMemberName();
+          String memberName = input.inputStringWithLabel("Enter member name: ");
           List<Member> membersSearchResult = searching.searchMemberByName(memberName, members);
           System.out.println(gson.toJson(membersSearchResult));
           break;
@@ -56,12 +56,12 @@ public class PkkqApplication {
           borrowingInfos.add(newBorrowingInfo);
           break;
         case 6:
-          memberName = input.inputMemberName();
+          memberName = input.inputStringWithLabel("Enter member name: ");
           List<BorrowingInfo> borrowingInfoSearched = searching.searchBorrowingInfoByMemberName(memberName, borrowingInfos);
           System.out.println(gson.toJson(borrowingInfoSearched));
           break;
         case 7:
-          int idBorrowingInfo = input.inputIdBorrowingInfo();
+          int idBorrowingInfo = input.inputNumberWithLabel("Id Borrowing Info: ");
           makePayment(idBorrowingInfo);
           break;
       }
@@ -82,11 +82,7 @@ public class PkkqApplication {
     System.out.println("6. Search Borrowing Info");
     System.out.println("7. Make payment");
     System.out.println("8. Exit");
-    System.out.print("Select your choice: ");
-    
-    int choice = scanner.nextInt();
-    scanner.nextLine();
-    
+    int choice = input.inputNumberWithLabel("Select your choice: ");
     return choice;
   }
   
